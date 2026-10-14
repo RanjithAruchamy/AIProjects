@@ -1,6 +1,7 @@
 # pip install openai gradio python-dotenv
 import os
 import gradio as gr
+from fastapi import FastAPI
 from openai import OpenAI
 from dotenv import load_dotenv
 load_dotenv()
@@ -50,4 +51,12 @@ with gr.Blocks(title="LLM Arena") as demo:
     up_b.click(lambda: vote("👍 Model B"), outputs=verdict)
     down_b.click(lambda: vote("👎 Model B"), outputs=verdict)
 
-demo.launch(share=True)   # → local + public link 🎉
+app = gr.mount_gradio_app(FastAPI(), demo, path="/")
+
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 7860))
+    demo.launch(
+        server_name="0.0.0.0",
+        server_port=port,
+        prevent_thread_lock=False,
+    )
