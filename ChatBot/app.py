@@ -3,6 +3,7 @@
 # Run:  python app.py     then open the local link it prints.
 import gradio as gr
 from agent import agent          # the function from agent.py
+from fastapi import FastAPI
 
 
 def chat(message, history):
@@ -11,8 +12,15 @@ def chat(message, history):
     return agent(message)
 
 
-gr.ChatInterface(
+demo = gr.ChatInterface(
     fn=chat,
     title="🛍️ Smart Shop Assistant",
     description="Ask me the price of shoes, hat, bag, shorts or pants — I'll look it up.",
-).launch(share=True)   # share=True -> also prints a public link you can post
+)
+demo.launch(share=True,
+            server_name="0.0.0.0",   # Required: Binds to all network interfaces
+            server_port=port,        # Required: Uses the port assigned dynamically by Render
+        prevent_thread_lock=False # Ensures the main thread stays alive,
+        )   # share=True -> also prints a public link you can post
+
+app = gr.mount_gradio_app(FastAPI(), demo, path="/")
