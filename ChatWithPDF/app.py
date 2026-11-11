@@ -1,6 +1,7 @@
 from pdf_chat import ask
 from pdf_loader import build_index
 import gradio as gr
+import os
 from fastapi import FastAPI
 
 state = {"db": None}
