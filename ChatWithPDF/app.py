@@ -7,12 +7,17 @@ from fastapi import FastAPI
 state = {"db": None}
 
 def upload(pdf):
-    state["db"] = build_index(pdf.name)
-    return "✅ PDF indexed! Ask me anything about it."
+    if pdf is None:
+        return "Please choose a PDF to upload."
+    try:
+        state["db"] = build_index(pdf.name)
+    except Exception as exc:
+        return f"Could not index PDF: {exc}"
+    return "PDF indexed. Ask me anything about it."
 
 def chat(message, history):
     if state["db"] is None:
-        return "Please upload a PDF first 📄"
+        return "Please upload a PDF first."
     return ask(state["db"], message)
 
 with gr.Blocks(title="📄 Chat with your PDF") as demo:
